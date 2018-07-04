@@ -1,0 +1,5 @@
+A : e.code = "BTN_SOUTH" e.state = 0|1
+X : e.code = "BTN_WEST"  e.state = 0|1
+Y : e.code = "BTN_NORTH" e.state = 0|1
+B : e.code = "BTN_EAST"  e.state = 0|1
+
