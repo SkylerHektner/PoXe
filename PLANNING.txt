@@ -1,0 +1,8 @@
+SELECT = Switch modes
+START = ESCAPE
+
+BUTTONS = BINDABLE (A = Click, B = Left Click, Y = Control-Click, X = Shift-Click)
+
+DPAD = BINDABLE (Step + AutoStepHold)
+
+TRIGGERS = BINDABLE (RT = Snap Inv top left, LT = Snap Stash Currency Mid, RB = Right Arrow, LB = Left Arrow)
