@@ -3,3 +3,7 @@ X : e.code = "BTN_WEST"  e.state = 0|1
 Y : e.code = "BTN_NORTH" e.state = 0|1
 B : e.code = "BTN_EAST"  e.state = 0|1
 
+DPAD-LEFT : = "ABS_HAT0X" e.state = -1
+DPAD-RIGHT: = "ABS_HAT0X" e.state =  1
+DPAD-UP   : = "ABS_HAT0Y" e.state = -1
+DPAD-DOWN : = "ABS_HAT0Y" e.state =  1

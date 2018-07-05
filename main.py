@@ -23,6 +23,11 @@ class IOHandler:
         self.swapCliff = 25000
         self.noLockSens = 20.0
 
+        self.rightClose = False
+        self.leftClose = False
+        self.rightCloseTrigger = False
+        self.leftCloseTrigger = False
+
         self.xStart, self.yStart = pyautogui.size()
         self.xStart /= 2
         self.yStart /= 2
@@ -39,11 +44,13 @@ class IOHandler:
 
         self.inputState = InputState.LOCKED
 
+        self.funcMap = dict()
+        self.populateInputFunctionMap()
+
         self.inputThread.start()
         self.outputThread.start()
     
     def inputLoop(self):
-        rightClose, leftClose, rightCloseTrigger, leftCloseTrigger = False, False, False, False
         while 1:
             while self.inputActive:
                 try:
@@ -58,49 +65,14 @@ class IOHandler:
                 for e in events:
                     if (e.code == "SYN_REPORT"):
                         pass
-                    elif (e.code == "ABS_X"):
-                        if (abs(e.state) > self.swapCliff):
-                            self.inputState = InputState.LOCKED
-                        if (self.inputState == InputState.LOCKED):
-                            self.x = self.xStart + ((e.state/32000.0) * self.maxRange)
-                    elif (e.code == "ABS_Y"):
-                        if (abs(e.state) > self.swapCliff):
-                            self.inputState = InputState.LOCKED
-                        if (self.inputState == InputState.LOCKED):
-                            self.y = self.yStart - ((e.state/32000.0) * self.maxRange)
-                    elif (e.code == "ABS_RX"):
-                        if (abs(e.state) > self.swapCliff):
-                            self.inputState = InputState.FREE 
-                        if (self.inputState == InputState.FREE):
-                            self.xAccel = math.pow((e.state/32000.0),3) * self.noLockSens
-                    elif (e.code == "ABS_RY"):
-                        if (abs(e.state) > self.swapCliff):
-                            self.inputState = InputState.FREE
-                        if (self.inputState == InputState.FREE):
-                            self.yAccel = math.pow((e.state/32000.0),3)* self.noLockSens
-                    
-                    # CLOSING LOGIC
-                    elif (e.code == "ABS_RZ"):
-                        if (e.state == 255):
-                            rightClose = True
-                        else:
-                            rightClose = False
-                    elif (e.code == "ABS_Z"):
-                        if (e.state == 255):
-                            leftClose = True
-                        else:
-                            leftClose = False
-                    elif (e.code == "BTN_TR"):
-                        rightCloseTrigger = bool(e.state)
-                    elif (e.code == "BTN_TL"):
-                        leftCloseTrigger = bool(e.state)
                     else:
-                        print(e.code, e.state)
-                    
-                if (leftClose and rightClose and leftCloseTrigger and rightCloseTrigger):
+                        self.funcMap[e.code](e)
+
+                # EXIT CONDITION    
+                if (self.leftClose and self.rightClose and self.leftCloseTrigger and self.rightCloseTrigger):
                     self.inputActive = False
                     self.outputActive = False
-                    leftClose, rightClose, leftCloseTrigger, rightCloseTrigger = False, False, False, False
+                    self.leftClose, self.rightClose, self.leftCloseTrigger, self.rightCloseTrigger = False, False, False, False
                     
             
             while not self.inputActive:
@@ -109,7 +81,77 @@ class IOHandler:
                     break
             if (self.closeThreads):
                 break
+    
+    def populateInputFunctionMap(self):
+        self.funcMap["ABS_X"] = self.leftAnalogX
+        self.funcMap["ABS_Y"] = self.leftAnalogY
+        self.funcMap["ABS_RX"] = self.rightAnalogX
+        self.funcMap["ABS_RY"] = self.rightAnalogY
+        self.funcMap["ABS_HAT0X"] = self.dPadX
+        self.funcMap["ABS_HAT0Y"] = self.dPadY
+        self.funcMap["ABS_Z"] = self.triggerTwoLeft
+        self.funcMap["ABS_RZ"] = self.triggerTwoRight
+        self.funcMap["BTN_TL"] = self.triggerOneLeft
+        self.funcMap["BTN_TR"] = self.triggerOneRight
+        self.funcMap["BTN_SOUTH"] = self.aButton
+        self.funcMap["BTN_WEST"] = self.xButton
+        self.funcMap["BTN_EAST"] = self.bButton
+        self.funcMap["BTN_NORTH"] = self.yButton
 
+    # JOY STICKS
+    def leftAnalogY(self, e):
+        if (abs(e.state) > self.swapCliff):
+            self.inputState = InputState.LOCKED
+        if (self.inputState == InputState.LOCKED):
+            self.y = self.yStart - ((e.state/32000.0) * self.maxRange)
+    def leftAnalogX(self, e):
+        if (abs(e.state) > self.swapCliff):
+            self.inputState = InputState.LOCKED
+        if (self.inputState == InputState.LOCKED):
+            self.x = self.xStart + ((e.state/32000.0) * self.maxRange)
+    def rightAnalogY(self, e):
+        if (abs(e.state) > self.swapCliff):
+            self.inputState = InputState.FREE
+        if (self.inputState == InputState.FREE):
+            self.yAccel = math.pow((e.state/32000.0),3)* self.noLockSens
+    def rightAnalogX(self, e):
+        if (abs(e.state) > self.swapCliff):
+            self.inputState = InputState.FREE 
+        if (self.inputState == InputState.FREE):
+            self.xAccel = math.pow((e.state/32000.0),3) * self.noLockSens
+
+    # D PAD
+    def dPadY(self, e):
+        pass
+    def dPadX(self, e):
+        pass
+    
+    # TRIGGERS
+    def triggerOneLeft(self, e):
+        self.leftCloseTrigger = bool(e.state)
+    def triggerTwoLeft(self, e):
+        if (e.state == 255):
+            self.leftClose = True
+        else:
+            self.leftClose = False
+    def triggerOneRight(self, e):
+        self.rightCloseTrigger = bool(e.state)
+    def triggerTwoRight(self, e):
+        if (e.state == 255):
+            self.rightClose = True
+        else:
+            self.rightClose = False
+    
+    # BUTTONS
+    def aButton(self, e):
+        pass
+    def xButton(self, e):
+        pass
+    def bButton(self, e):
+        pass
+    def yButton(self, e):
+        pass
+    
     def outputLoop(self):
         while 1:
             while self.outputActive:
