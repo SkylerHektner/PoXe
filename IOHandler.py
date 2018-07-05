@@ -21,7 +21,16 @@ class IOHandler:
         self.inputActive = False
         self.outputActive = False
         self.closeThreads = False
-        
+
+        # Inventory Snapping Positions
+        self.invTopLeftX = 1295
+        self.invTopLeftY = 615
+        self.step = 53
+        self.currencyCenterX = 335
+        self.currencyCenterY = 520
+
+        # bool for tracking shift toggle
+        self.shiftOn = False
 
         # bools for tracking exit condition (All Four Triggers)
         self.rightClose = False
@@ -39,7 +48,6 @@ class IOHandler:
         self.y = self.yStart
         self.xAccel = 0
         self.yAccel = 0
-        self.step = 100
         self.swapCliff = 25000
         self.noLockSens = 20.0
 
@@ -103,6 +111,8 @@ class IOHandler:
         self.funcMap["BTN_WEST"] = self.xButton
         self.funcMap["BTN_EAST"] = self.bButton
         self.funcMap["BTN_NORTH"] = self.yButton
+        self.funcMap["BTN_START"] = self.startButton
+        self.funcMap["BTN_SELECT"] = self.selectButton
 
     # JOY STICKS
     def leftAnalogY(self, e):
@@ -130,7 +140,7 @@ class IOHandler:
     def dPadY(self, e):
         self.inputState = InputState.INCREMENT
         if (self.inputState == InputState.INCREMENT):
-            self.y -= self.step * e.state
+            self.y += self.step * e.state
     def dPadX(self, e):
         self.inputState = InputState.INCREMENT
         if (self.inputState == InputState.INCREMENT):
@@ -138,29 +148,74 @@ class IOHandler:
     
     # TRIGGERS
     def triggerOneLeft(self, e):
+        if (e.state):
+            pyautogui.press("left")
         self.leftCloseTrigger = bool(e.state)
     def triggerTwoLeft(self, e):
         if (e.state == 255):
+            self.inputState = InputState.FREE
+            self.x = self.currencyCenterX
+            self.y = self.currencyCenterY
             self.leftClose = True
         else:
             self.leftClose = False
     def triggerOneRight(self, e):
+        if (e.state):
+            pyautogui.press("right")
         self.rightCloseTrigger = bool(e.state)
     def triggerTwoRight(self, e):
         if (e.state == 255):
             self.rightClose = True
+            self.inputState = InputState.FREE
+            self.x = self.invTopLeftX
+            self.y = self.invTopLeftY
         else:
             self.rightClose = False
     
     # BUTTONS
     def aButton(self, e):
-        pass
-    def xButton(self, e):
-        pass
-    def bButton(self, e):
-        pass
+        if (e.state != 1):
+            return
+        if (self.shiftOn):
+            pyautogui.keyUp("shiftleft")
+            self.shiftOn = False
+        pyautogui.click()
     def yButton(self, e):
-        pass
+        if (e.state != 1):
+            return
+        if (not self.shiftOn):
+            pyautogui.keyDown("shiftleft")
+            self.shiftOn = True
+        pyautogui.click()
+        
+    def bButton(self, e):
+        if (e.state != 1):
+            return
+        if (self.shiftOn):
+            pyautogui.keyUp("shiftleft")
+            self.shiftOn = False
+        pyautogui.rightClick()
+    def xButton(self, e):
+        if (e.state != 1):
+            return
+        if (self.shiftOn):
+            pyautogui.keyUp("shiftleft")
+            self.shiftOn = False
+        pyautogui.keyDown("ctrlleft")
+        pyautogui.click()
+        pyautogui.keyUp("ctrlleft")
+    
+    #START/SELECT
+    def startButton(self, e):
+        if (self.shiftOn):
+            pyautogui.keyUp("shiftleft")
+            self.shiftOn = False
+    def selectButton(self, e):
+        if (e.state):
+            pyautogui.press("escape")
+        if (self.shiftOn):
+            pyautogui.keyUp("shiftleft")
+            self.shiftOn = False
     
     def outputLoop(self):
         while 1:
