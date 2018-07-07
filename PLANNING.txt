@@ -19,7 +19,7 @@ Inventory Snap Position (x,y) (Two Combo Boxes)
 Stash Snap Position(x, y) (Two Combo Boxes)
 Step Increment = 54 (20-1000) (Combo Box)
 
-2) Add in keyups on mode switch to stop bugs
+2) Add in keyups on mode switch to stop bugs (DONE)
 
 3) Add in Middle_Mouse support to custom bindings
 
@@ -31,4 +31,4 @@ Step Increment = 54 (20-1000) (Combo Box)
 
 7) Add in saving default preferences
 
-8) Change cursor unlock to select + start
+8) Change cursor unlock to select + start (DONE)

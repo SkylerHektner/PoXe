@@ -141,6 +141,15 @@ class IOHandler:
             self.funcMap["BTN_SELECT"] = self.selectButton
             self.funcMap["BTN_THUMBR"] = self.rightAnalogClickMapping
             self.funcMap["BTN_THUMBL"] = self.leftAnalogClickMapping
+        self.keyUps()
+
+    
+    def keyUps(self):
+        for value in self.bindingsDict.values():
+            pyautogui.keyUp(value)
+        pyautogui.keyUp("left")
+        pyautogui.keyUp("right")
+
 
     # JOY STICKS
     def leftAnalogY(self, e):
