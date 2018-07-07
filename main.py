@@ -3,11 +3,12 @@ from IOHandler import IOHandler, InputState
 import pyautogui
 import inputs
 import re
+from constants import CONSTANTS
 
 # MAIN APPLICATION
 class PoXe:
     def __init__(self):
-        self.app = gui()
+        self.app = gui(useTtk=True)
         self.bindingsDict = dict()
         self.configureBindingsDict()
         self.configureUI()
@@ -16,23 +17,32 @@ class PoXe:
         self.app.go()
 
     def configureBindingsDict(self):
-        self.bindingsDict["Bind X Button"] = "r"
-        self.bindingsDict["Bind Y Button"] = "f"
-        self.bindingsDict["Bind Left Button"] = "2"
-        self.bindingsDict["Bind Right Button"] = "3"
-        self.bindingsDict["Bind Left Trigger"] = "1"
-        self.bindingsDict["Bind Right Trigger"] = "4"
-        self.bindingsDict["Bind Dpad Down"] = "w"
-        self.bindingsDict["Bind Dpad Up"] = "t"
-        self.bindingsDict["Bind Dpad Left"] = "q"
-        self.bindingsDict["Bind Dpad Right"] = "e"
+        self.bindingsDict[CONSTANTS.XBinding] = "r"
+        self.bindingsDict[CONSTANTS.YBinding] = "f"
+        self.bindingsDict[CONSTANTS.LBBinding] = "2"
+        self.bindingsDict[CONSTANTS.RBBinding] = "3"
+        self.bindingsDict[CONSTANTS.LTBinding] = "1"
+        self.bindingsDict[CONSTANTS.RTBinding] = "4"
+        self.bindingsDict[CONSTANTS.DPDBinding] = "w"
+        self.bindingsDict[CONSTANTS.DPUBinding] = "t"
+        self.bindingsDict[CONSTANTS.DPLBinding] = "q"
+        self.bindingsDict[CONSTANTS.DPRBinding] = "e"
+        self.bindingsDict[CONSTANTS.LACBinding] = "tab"
+        self.bindingsDict[CONSTANTS.RACBinding] = "g"
 
     def configureUI(self):
         # NAME
         self.app.title = "PoXe"
+        self.app.setIcon("Poxe.ico")
+
+        # CONFIG
+        self.app.setResizable(canResize=False)
+        self.app.setBg("black")
+        self.app.setFg("grey")
 
         # START BUTTON
         self.app.addButton("START", self.startTracking, 0, 0, 2, 2)
+        self.app.setButtonWidth("START", 30)
 
         # CONTROLS CONFIGURATIONS
         self.app.addLabel("A_Label", "A Binding: Left Click", 2, 0)
@@ -40,22 +50,24 @@ class PoXe:
         self.app.addLabel("B_Label", "B Binding: Right Click", 3, 0)
         self.app.setLabelAlign("B_Label", "left")
 
-        self.createBindingSet("Bind X Button", "X Binding: "+ self.bindingsDict["Bind X Button"], 4, 0)
-        self.createBindingSet("Bind Y Button", "Y Binding: " + self.bindingsDict["Bind Y Button"], 5, 0)
-        self.createBindingSet("Bind Left Button", "LB Binding: " + self.bindingsDict["Bind Left Button"], 6, 0)
-        self.createBindingSet("Bind Right Button", "RB Binding: " + self.bindingsDict["Bind Right Button"], 7, 0)
-        self.createBindingSet("Bind Left Trigger", "LT Binding: " + self.bindingsDict["Bind Left Trigger"], 8, 0)
-        self.createBindingSet("Bind Right Trigger", "RT Binding: " + self.bindingsDict["Bind Right Trigger"], 9, 0)
-        self.createBindingSet("Bind Dpad Down", "DPad Down Binding: " + self.bindingsDict["Bind Dpad Down"], 10, 0)
-        self.createBindingSet("Bind Dpad Up", "DPad Up Binding: " + self.bindingsDict["Bind Dpad Up"], 11, 0)
-        self.createBindingSet("Bind Dpad Left", "DPad Left Binding: " + self.bindingsDict["Bind Dpad Left"], 12, 0)
-        self.createBindingSet("Bind Dpad Right", "DPad Right Binding: " + self.bindingsDict["Bind Dpad Right"], 13, 0)
+        self.createBindingSet(CONSTANTS.XBinding, "X Binding: "+ self.bindingsDict[CONSTANTS.XBinding], 4, 0)
+        self.createBindingSet(CONSTANTS.YBinding, "Y Binding: " + self.bindingsDict[CONSTANTS.YBinding], 5, 0)
+        self.createBindingSet(CONSTANTS.LBBinding, "LB Binding: " + self.bindingsDict[CONSTANTS.LBBinding], 6, 0)
+        self.createBindingSet(CONSTANTS.RBBinding, "RB Binding: " + self.bindingsDict[CONSTANTS.RBBinding], 7, 0)
+        self.createBindingSet(CONSTANTS.LTBinding, "LT Binding: " + self.bindingsDict[CONSTANTS.LTBinding], 8, 0)
+        self.createBindingSet(CONSTANTS.RTBinding, "RT Binding: " + self.bindingsDict[CONSTANTS.RTBinding], 9, 0)
+        self.createBindingSet(CONSTANTS.DPDBinding, "DPad Down Binding: " + self.bindingsDict[CONSTANTS.DPDBinding], 10, 0)
+        self.createBindingSet(CONSTANTS.DPUBinding, "DPad Up Binding: " + self.bindingsDict[CONSTANTS.DPUBinding], 11, 0)
+        self.createBindingSet(CONSTANTS.DPLBinding, "DPad Left Binding: " + self.bindingsDict[CONSTANTS.DPLBinding], 12, 0)
+        self.createBindingSet(CONSTANTS.DPRBinding, "DPad Right Binding: " + self.bindingsDict[CONSTANTS.DPRBinding], 13, 0)
+        self.createBindingSet(CONSTANTS.LACBinding, "Left Analog Click Binding: " + self.bindingsDict[CONSTANTS.LACBinding], 14, 0)
+        self.createBindingSet(CONSTANTS.RACBinding, "Right Analog Click Binding: " + self.bindingsDict[CONSTANTS.RACBinding], 15, 0)
 
     def createBindingSet(self, label, labelText, row, column):
         self.app.addLabel(label + "L", labelText, row, column)
         self.app.setLabelAlign(label + "L", "left")
         self.app.addButton(label, self.bindNewKey, row, column + 1)
-        self.app.setButtonAlign(label, "left")
+        self.app.setButtonWidth(label, 20)
     
     def startTracking(self):
         self.ioHandler.inputActive = True
@@ -68,17 +80,21 @@ class PoXe:
         return True
 
     def bindNewKey(self, btn):
-        result = self.app.stringBox("Key Binding", btn + ": Please only enter a single letter or number (0-9)")
-        match = re.search("[A-Z,a-z,0-9]", result)
+        result = self.app.stringBox("Key Binding", btn + ": enter single letter, number, or tab | space | shift | middle_mouse")
+        result = result.lower()
         try:
-            self.bindingsDict[btn] = match.group()
-            self.app.setLabel(btn + "L", self.replaceLastChar(self.app.getLabel(btn + "L"), match.group()))
+            if (result in CONSTANTS.SPECIAL_BINDS):
+                self.bindingsDict[btn] = result
+                self.app.setLabel(btn + "L", self.replaceBindingEnd(self.app.getLabel(btn + "L"), result))
+            else:
+                match = re.search("[A-Z,a-z,0-9]", result)
+                self.bindingsDict[btn] = match.group()
+                self.app.setLabel(btn + "L", self.replaceBindingEnd(self.app.getLabel(btn + "L"), match.group()))
         except:
-            self.app.warningBox("Invalid Entry", "Sorry, your entry was invalid. Please enter a single letter or number(0-9)")
+            self.app.warningBox("Invalid Entry", "Sorry, your entry was invalid.")
 
-    def replaceLastChar(self, oldString, newLastChar):
-        s = oldString[:-1]
-        s += newLastChar
+    def replaceBindingEnd(self, oldString, newLastChar):
+        s = oldString.split(":")[0] + ": " + newLastChar
         return s
         
 
