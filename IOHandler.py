@@ -14,23 +14,18 @@ class InputState(Enum):
     INCREMENT = 3
 
 class IOHandler:
-    def __init__(self, app, bindingsDict):
+    def __init__(self, app, userPrefsDict):
         # reference to the gui for raising warning dialogues
         self.app = app
-        # reference to the bindingsDict for triggering actions
-        self.bindingsDict = bindingsDict
+        # reference to the userPrefsDict for triggering actions
+        self.userPrefsDict = userPrefsDict
 
         # bools for managing thread states
         self.inputActive = False
         self.outputActive = False
         self.closeThreads = False
-
-        # Inventory Snapping Positions
-        self.invTopLeftX = 1295
-        self.invTopLeftY = 615
-        self.step = 54
-        self.currencyCenterX = 335
-        self.currencyCenterY = 540
+        # float used for timing on outputThread sleep
+        self.sleepTime = 1/self.userPrefsDict[CONSTANTS.FrameRate]
 
         # bool for tracking shift toggle
         self.shiftOn = False
@@ -44,16 +39,17 @@ class IOHandler:
 
         # numbers used in mouse positioning arithmetic
         self.xStart, self.yStart = pyautogui.size()
+        self.maxRange = min(self.xStart, self.yStart) * self.userPrefsDict[CONSTANTS.LockedCursorRadius]
         self.xStart /= 2
         self.yStart /= 2
         self.yStart -= 100
-        self.maxRange = min(self.xStart, self.yStart)/2.0
         self.x = self.xStart
         self.y = self.yStart
         self.xAccel = 0
         self.yAccel = 0
         self.swapCliff = 25000
-        self.noLockSens = 20.0
+        self.noLockSens = self.userPrefsDict[CONSTANTS.FreeCursorSpeed]/self.userPrefsDict[CONSTANTS.FrameRate]
+        self.noLockAccel = self.userPrefsDict[CONSTANTS.FreeCursorAccel]
 
         # the input state used when deciding how to increment the cursor
         self.inputState = InputState.LOCKED
@@ -145,8 +141,17 @@ class IOHandler:
 
     
     def keyUps(self):
-        for value in self.bindingsDict.values():
-            pyautogui.keyUp(value)
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.XBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.YBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.LBBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.RBBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.LTBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.DPDBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.DPUBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.DPLBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.DPRBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.LACBinding])
+        pyautogui.keyUp(self.userPrefsDict[CONSTANTS.RACBinding])
         pyautogui.keyUp("left")
         pyautogui.keyUp("right")
 
@@ -166,52 +171,52 @@ class IOHandler:
         if (abs(e.state) > self.swapCliff):
             self.inputState = InputState.FREE
         if (self.inputState == InputState.FREE):
-            self.yAccel = math.pow((e.state/32000.0),3)* self.noLockSens
+            self.yAccel = math.pow((e.state/32000.0),self.noLockAccel)* self.noLockSens
     def rightAnalogX(self, e):
         if (abs(e.state) > self.swapCliff):
             self.inputState = InputState.FREE 
         if (self.inputState == InputState.FREE):
-            self.xAccel = math.pow((e.state/32000.0),3) * self.noLockSens
+            self.xAccel = math.pow((e.state/32000.0),self.noLockAccel) * self.noLockSens
     def leftAnalogClick(self, e):
         pass
     def leftAnalogClickMapping(self, e):
         if (e.state):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.LACBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.LACBinding])
         else:
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.LACBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.LACBinding])
     def rightAnalogClick(self, e):
         pass
     def rightAnalogClickMapping(self, e):
         if (e.state):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.RACBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.RACBinding])
         else:
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.RACBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.RACBinding])
 
     # D PAD
     def dPadY(self, e):
         self.inputState = InputState.INCREMENT
         if (self.inputState == InputState.INCREMENT):
-            self.y += self.step * e.state
+            self.y += self.userPrefsDict[CONSTANTS.IncrementStep] * e.state
     def dPadYMapping(self, e):
         if (e.state == 0):
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.DPUBinding])
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.DPDBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.DPUBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.DPDBinding])
         elif (e.state == -1):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.DPUBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.DPUBinding])
         else:
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.DPDBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.DPDBinding])
     def dPadX(self, e):
         self.inputState = InputState.INCREMENT
         if (self.inputState == InputState.INCREMENT):
-            self.x += self.step * e.state
+            self.x += self.userPrefsDict[CONSTANTS.IncrementStep] * e.state
     def dPadXMapping(self, e):
         if (e.state == 0):
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.DPLBinding])
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.DPRBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.DPLBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.DPRBinding])
         elif (e.state == -1):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.DPLBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.DPLBinding])
         else:
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.DPRBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.DPRBinding])
     
     # TRIGGERS
     def triggerOneLeft(self, e):
@@ -221,19 +226,19 @@ class IOHandler:
             pyautogui.keyUp("left")
     def triggerOneLeftMapping(self, e):
         if (e.state != 1):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.LBBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.LBBinding])
         else:
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.LBBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.LBBinding])
     def triggerTwoLeft(self, e):
         if (e.state == 255):
             self.inputState = InputState.FREE
-            self.x = self.currencyCenterX
-            self.y = self.currencyCenterY
+            self.x = self.userPrefsDict[CONSTANTS.StashSnapX]
+            self.y = self.userPrefsDict[CONSTANTS.StashSnapY]
     def triggerTwoLeftMapping(self, e):
         if (e.state == 255):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.LTBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.LTBinding])
         else:
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.LTBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.LTBinding])
     def triggerOneRight(self, e):
         if (e.state):
             pyautogui.keyDown("right")
@@ -241,19 +246,19 @@ class IOHandler:
             pyautogui.keyUp("right")
     def triggerOneRightMapping(self, e):
         if (e.state != 1):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.RBBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.RBBinding])
         else:
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.RBBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.RBBinding])
     def triggerTwoRight(self, e):
         if (e.state == 255):
             self.inputState = InputState.FREE
-            self.x = self.invTopLeftX
-            self.y = self.invTopLeftY
+            self.x = self.userPrefsDict[CONSTANTS.InventorySnapX]
+            self.y = self.userPrefsDict[CONSTANTS.InventorySnapY]
     def triggerTwoRightMapping(self, e):
         if (e.state == 255):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.RTBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.RTBinding])
         else:
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.RTBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.RTBinding])
         
     
     # BUTTONS
@@ -275,9 +280,9 @@ class IOHandler:
             pyautogui.mouseUp()
     def yButtonMapping(self, e):
         if (e.state):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.YBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.YBinding])
         else:
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.YBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.YBinding])
     def bButton(self, e):
         if (e.state):
             pyautogui.mouseDown(button="right")
@@ -297,9 +302,9 @@ class IOHandler:
         pyautogui.keyUp("ctrlleft")
     def xButtonMapping(self, e):
         if (e.state):
-            pyautogui.keyDown(self.bindingsDict[CONSTANTS.XBinding])
+            pyautogui.keyDown(self.userPrefsDict[CONSTANTS.XBinding])
         else:
-            pyautogui.keyUp(self.bindingsDict[CONSTANTS.XBinding])
+            pyautogui.keyUp(self.userPrefsDict[CONSTANTS.XBinding])
     
     #START/SELECT
     def startButton(self, e):
@@ -329,7 +334,7 @@ class IOHandler:
                     self.x += self.xAccel
                     self.y -= self.yAccel
                 ctypes.windll.user32.SetCursorPos(int(self.x), int(self.y))
-                time.sleep(.016)
+                time.sleep(self.sleepTime)
 
             while not self.outputActive:
                 time.sleep(.5)

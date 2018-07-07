@@ -14,4 +14,19 @@ class CONSTANTS:
     LACBinding = "Bind Left Analog Click"
     RACBinding = "Bind Right Analog Click"
 
+    # Global Settings
+    LockedCursorRadius = "Locked Cursor Radius"
+    FreeCursorSpeed = "Free Cursor Speed"
+    FreeCursorAccel = "Free Cursor Acceleration"
+    FrameRate = "Frame Rate"
+    InventorySnapX = "Inventory Snap X"
+    InventorySnapY = "Inventory Snap Y"
+    StashSnapX = "Stash Snap X"
+    StashSnapY = "Stash Snap Y"
+    IncrementStep = "Increment Step"
+
+
+
+
+
     SPECIAL_BINDS = ["tab", "space", "middle_mouse", "shift"]

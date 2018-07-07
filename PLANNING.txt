@@ -9,7 +9,7 @@ TRIGGERS = BINDABLE (RT = Snap Inv top left, LT = Snap Stash Currency Mid, RB = 
 
 
 TODO:
-1) Implement more customization options/redo UI to fit these options
+1) Implement more customization options/redo UI to fit these options (HOLY SHIT DONE?)
 Locked Cursor Radius = (.1, .5) (Slider)
 Free Cursor Speed = 1000 (pixels per second) (300-2000) (Combo Box)
 Free Cursor Acceleration Factor = (1, 3, 5) (Radio Buttons)
@@ -23,9 +23,9 @@ Step Increment = 54 (20-1000) (Combo Box)
 
 3) Add in Middle_Mouse support to custom bindings
 
-4) Add in an instructions button that brings up a popup
+4) Add in an instructions button that brings up a popup (DONE ENOUGH)
 
-5) Make the start button also become a stop button after being clicked
+5) Make the start button also become a stop button after being clicked (DONE)
 
 6) Find ways to unlock cursor after thrown errors???
 

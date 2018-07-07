@@ -1,8 +1,8 @@
-<b>Welcome to PoXe!</b>
+Welcome to PoXe!
 
 PoXe is an Xbox 360 Gamepad to Keyboard/Mouse binding solution designed specifically for Path of Exile.
 
-In order to accomodate Path of Exiles complexity, PoXe has two seperate modes <i>Mapping</i> and <i>Hideout</i>.
+In order to accommodate Path of Exiles complexity, PoXe has two separate modes Mapping and Hideout.
 Most buttons rebind to different controls between these two settings except Select, Start, A, and B. 
 Select will always be used to switch between Mapping and Hideout modes.
 Start will always be bound to "Escape" on your keyboard
@@ -10,33 +10,33 @@ Pressing Select and Start together will always unlock your cursor
 A will always be bound to left click
 B will always be bound to right click
 
-<b> Analog Sticks </b>
-In PoXe your analog sticks control your mouse. There are two mouse control types in PoXe, <i>Free</i> and <i>Locked</i>.
-In Locked mode your cursor starts at the center of the sceen and moves in a circle around your character depending on the
+Analog Sticks 
+In PoXe your analog sticks control your mouse. There are two mouse control types in PoXe, Free and Locked.
+In Locked mode your cursor starts at the center of the screen and moves in a circle around your character depending on the
 position of the analog stick. This is the best mode for mapping as you can easily change directions on the fly.
 In Free mode the cursor is simply pushed around the screen in the direction you press the analog stick. This is the
 best mode inventory management and NPC interaction.
 Both of these input types can be tweaked to your preference in the main application under "Universal Settings"
 
-<b> Mapping Mode </b>
-In Mapping mode controller inputs map to your skills. You can configure these bindings in the main applicaton
+Mapping Mode 
+In Mapping mode controller inputs map to your skills. You can configure these bindings in the main application
 under "Mapping Mode Settings". In this mode you can bind the DPAD, Triggers, Left and Right Buttons, Analog 
 stick clicks, and the x and y buttons to nearly any key you want. (a = click and b = right click by default).
 
 In Mapping mode the left analog stick will be in Locked mode and the right analog stick will be in Free mode
 
-<b> Hideout Mode </b>
+Hideout Mode 
 In Hideout mode the controller inputs have been designed for managing your inventory and stash. These controls cannot be rebound,
-but some can be adjusted in the main applicaton under "Hideout Mode Settings". 
+but some can be adjusted in the main application under "Hideout Mode Settings". 
 
-In Hideout mode The left analog stick will be in Free mode and the right analog stick will be in Locked mode
+In Hideout mode the left analog stick will be in Free mode and the right analog stick will be in Locked mode
 
 A = Click
 B = Right Click
 X = Control + Click
 Y = Shift + Click
 
-Dpad = Incremental Step (one inventoy grid position at a time)
+Dpad = Incremental Step (one inventory grid position at a time)
 
 Left Trigger = Snap cursor to currency tab center
 Right Trigger = Snap cursor to inventory grid top Left
@@ -46,8 +46,8 @@ Left Button/Right Button = Arrow keys left and right for navigation of stash tab
 
 Right Analog Stick Click = Bindable (I recommend your atlas or inventory!)
 
-<b>How do I stop this thing?</b>
+How do I stop this thing?
 
-If you get into an "Oh Shit" situation for any reason and app is not responding, use the windows shortcut 
+If you get into an "Oh Shit" situation for any reason and app is not responding use the windows shortcut 
 control+shift+escape to bring up task manager and force quit the application. When task manager is your active 
 window PoXe cannot control your mouse.
