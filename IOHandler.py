@@ -39,10 +39,8 @@ class IOHandler:
         self.mapping = False
 
         # bools for tracking exit condition (All Four Triggers)
-        self.rightClose = False
-        self.leftClose = False
-        self.rightCloseTrigger = False
-        self.leftCloseTrigger = False
+        self.selectClose = False
+        self.startClose = False
 
         # numbers used in mouse positioning arithmetic
         self.xStart, self.yStart = pyautogui.size()
@@ -92,10 +90,10 @@ class IOHandler:
                             self.app.warningBox("Sorry, your controller may not be supported")
 
                     # EXIT CONDITION    
-                    if (self.leftClose and self.rightClose and self.leftCloseTrigger and self.rightCloseTrigger):
+                    if (self.startClose and self.selectClose):
                         self.inputActive = False
                         self.outputActive = False
-                        self.leftClose, self.rightClose, self.leftCloseTrigger, self.rightCloseTrigger = False, False, False, False
+                        self.startClose, self.selectClose = False, False
             
             while not self.inputActive:
                 time.sleep(.5)
@@ -212,54 +210,40 @@ class IOHandler:
             pyautogui.keyDown("left")
         else:
             pyautogui.keyUp("left")
-        self.leftCloseTrigger = bool(e.state)
     def triggerOneLeftMapping(self, e):
         if (e.state != 1):
             pyautogui.keyDown(self.bindingsDict[CONSTANTS.LBBinding])
         else:
             pyautogui.keyUp(self.bindingsDict[CONSTANTS.LBBinding])
-        self.leftCloseTrigger = bool(e.state)
     def triggerTwoLeft(self, e):
         if (e.state == 255):
             self.inputState = InputState.FREE
             self.x = self.currencyCenterX
             self.y = self.currencyCenterY
-            self.leftClose = True
-        else:
-            self.leftClose = False
     def triggerTwoLeftMapping(self, e):
         if (e.state == 255):
-            self.leftClose = True
             pyautogui.keyDown(self.bindingsDict[CONSTANTS.LTBinding])
         else:
-            self.leftClose = False
             pyautogui.keyUp(self.bindingsDict[CONSTANTS.LTBinding])
     def triggerOneRight(self, e):
         if (e.state):
             pyautogui.keyDown("right")
         else:
             pyautogui.keyUp("right")
-        self.rightCloseTrigger = bool(e.state)
     def triggerOneRightMapping(self, e):
         if (e.state != 1):
             pyautogui.keyDown(self.bindingsDict[CONSTANTS.RBBinding])
         else:
             pyautogui.keyUp(self.bindingsDict[CONSTANTS.RBBinding])
-        self.leftCloseTrigger = bool(e.state)
     def triggerTwoRight(self, e):
         if (e.state == 255):
-            self.rightClose = True
             self.inputState = InputState.FREE
             self.x = self.invTopLeftX
             self.y = self.invTopLeftY
-        else:
-            self.rightClose = False
     def triggerTwoRightMapping(self, e):
         if (e.state == 255):
-            self.rightClose = True
             pyautogui.keyDown(self.bindingsDict[CONSTANTS.RTBinding])
         else:
-            self.rightClose = False
             pyautogui.keyUp(self.bindingsDict[CONSTANTS.RTBinding])
         
     
@@ -314,8 +298,10 @@ class IOHandler:
             pyautogui.keyUp("shiftleft")
             self.shiftOn = False
         if (e.state):
+            self.startClose = True
             self.mapping = not self.mapping
             self.populateInputFunctionMap()
+        self.startClose = bool(e.state)
     def selectButton(self, e):
         if (e.state):
             pyautogui.keyDown("escape")
@@ -324,6 +310,7 @@ class IOHandler:
         if (self.shiftOn):
             pyautogui.keyUp("shiftleft")
             self.shiftOn = False
+        self.selectClose = bool(e.state)
     
     def outputLoop(self):
         lastX, lastY = 0, 0
