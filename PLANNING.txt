@@ -6,3 +6,29 @@ BUTTONS = BINDABLE (A = Click, B = Left Click, Y = Control-Click, X = Shift-Clic
 DPAD = BINDABLE (Step + AutoStepHold)
 
 TRIGGERS = BINDABLE (RT = Snap Inv top left, LT = Snap Stash Currency Mid, RB = Right Arrow, LB = Left Arrow)
+
+
+TODO:
+1) Implement more customization options/redo UI to fit these options
+Locked Cursor Radius = (.1, .5) (Slider)
+Free Cursor Speed = 1000 (pixels per second) (300-2000) (Combo Box)
+Free Cursor Acceleration Factor = (1, 3, 5) (Radio Buttons)
+FrameRate = (30-90) (Combo Box)
+
+Inventory Snap Position (x,y) (Two Combo Boxes)
+Stash Snap Position(x, y) (Two Combo Boxes)
+Step Increment = 54 (20-1000) (Combo Box)
+
+2) Add in keyups on mode switch to stop bugs
+
+3) Add in Middle_Mouse support to custom bindings
+
+4) Add in an instructions button that brings up a popup
+
+5) Make the start button also become a stop button after being clicked
+
+6) Find ways to unlock cursor after thrown errors???
+
+7) Add in saving default preferences
+
+8) Change cursor unlock to select + start
