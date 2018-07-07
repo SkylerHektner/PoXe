@@ -29,6 +29,6 @@ Step Increment = 54 (20-1000) (Combo Box)
 
 6) Find ways to unlock cursor after thrown errors???
 
-7) Add in saving default preferences
+7) Add in saving default preferences (DONE)
 
 8) Change cursor unlock to select + start (DONE)

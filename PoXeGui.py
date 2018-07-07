@@ -4,6 +4,7 @@ import pyautogui
 import inputs
 import re
 from constants import CONSTANTS
+import json
 
 # MAIN APPLICATION
 class PoXe:
@@ -39,6 +40,22 @@ class PoXe:
         self.userSettingsDict[CONSTANTS.StashSnapX] = 335
         self.userSettingsDict[CONSTANTS.StashSnapY] = 540
         self.userSettingsDict[CONSTANTS.IncrementStep] = 54
+        try:
+            self.loadDefaults()
+        except:
+            self.saveDefaults(None)
+
+    def saveDefaults(self, btn):
+        file = open("userPrefs.json", "w")
+        file.flush()
+        file.write(json.dumps(self.userSettingsDict))
+        file.close()
+        if (btn != None):
+            self.app.infoBox("Success", "New Defaults Succesfully Saved")
+
+    def loadDefaults(self):
+        text = open("userPrefs.json").read()
+        self.userSettingsDict = json.loads(text)
 
     def configureUI(self):
         # NAME
@@ -113,6 +130,7 @@ class PoXe:
 
         # Extras
         self.app.addButton("Instructions", self.showInstructions, 4, 0)
+        self.app.addButton("Set As Default", self.saveDefaults, 4, 1)
 
     def createBindingSet(self, title, labelText, row, column):
         self.app.addLabel(title + "L", labelText, row, column)
