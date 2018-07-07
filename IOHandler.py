@@ -6,6 +6,7 @@ import inputs
 import time
 import ctypes
 from enum import Enum
+from constants import CONSTANTS
 
 class InputState(Enum):
     LOCKED = 1
@@ -13,9 +14,11 @@ class InputState(Enum):
     INCREMENT = 3
 
 class IOHandler:
-    def __init__(self, app):
+    def __init__(self, app, bindingsDict):
         # reference to the gui for raising warning dialogues
         self.app = app
+        # reference to the bindingsDict for triggering actions
+        self.bindingsDict = bindingsDict
 
         # bools for managing thread states
         self.inputActive = False
@@ -25,12 +28,15 @@ class IOHandler:
         # Inventory Snapping Positions
         self.invTopLeftX = 1295
         self.invTopLeftY = 615
-        self.step = 53
+        self.step = 54
         self.currencyCenterX = 335
-        self.currencyCenterY = 520
+        self.currencyCenterY = 540
 
         # bool for tracking shift toggle
         self.shiftOn = False
+
+        # bool for whether or not the player is in mapping mode
+        self.mapping = False
 
         # bools for tracking exit condition (All Four Triggers)
         self.rightClose = False
@@ -70,7 +76,6 @@ class IOHandler:
                 try:
                     events = inputs.get_gamepad()
                 except:
-                    print("No Gamepad Found")
                     self.inputActive = False
                     self.outputActive = False
                     self.app.warningBox("Controller Not Found", "Sorry, no controller was found")
@@ -80,14 +85,17 @@ class IOHandler:
                     if (e.code == "SYN_REPORT"):
                         pass
                     else:
-                        self.funcMap[e.code](e)
+                        try:
+                            self.funcMap[e.code](e)
+                        except:
+                            print(e.code)
+                            self.app.warningBox("Sorry, your controller may not be supported")
 
                     # EXIT CONDITION    
                     if (self.leftClose and self.rightClose and self.leftCloseTrigger and self.rightCloseTrigger):
                         self.inputActive = False
                         self.outputActive = False
                         self.leftClose, self.rightClose, self.leftCloseTrigger, self.rightCloseTrigger = False, False, False, False
-                    
             
             while not self.inputActive:
                 time.sleep(.5)
@@ -97,22 +105,44 @@ class IOHandler:
                 break
     
     def populateInputFunctionMap(self):
-        self.funcMap["ABS_X"] = self.leftAnalogX
-        self.funcMap["ABS_Y"] = self.leftAnalogY
-        self.funcMap["ABS_RX"] = self.rightAnalogX
-        self.funcMap["ABS_RY"] = self.rightAnalogY
-        self.funcMap["ABS_HAT0X"] = self.dPadX
-        self.funcMap["ABS_HAT0Y"] = self.dPadY
-        self.funcMap["ABS_Z"] = self.triggerTwoLeft
-        self.funcMap["ABS_RZ"] = self.triggerTwoRight
-        self.funcMap["BTN_TL"] = self.triggerOneLeft
-        self.funcMap["BTN_TR"] = self.triggerOneRight
-        self.funcMap["BTN_SOUTH"] = self.aButton
-        self.funcMap["BTN_WEST"] = self.xButton
-        self.funcMap["BTN_EAST"] = self.bButton
-        self.funcMap["BTN_NORTH"] = self.yButton
-        self.funcMap["BTN_START"] = self.startButton
-        self.funcMap["BTN_SELECT"] = self.selectButton
+        if (not self.mapping):
+            self.funcMap["ABS_X"] = self.rightAnalogX
+            self.funcMap["ABS_Y"] = self.rightAnalogY
+            self.funcMap["ABS_RX"] = self.leftAnalogX
+            self.funcMap["ABS_RY"] = self.leftAnalogY
+            self.funcMap["ABS_HAT0X"] = self.dPadX
+            self.funcMap["ABS_HAT0Y"] = self.dPadY
+            self.funcMap["ABS_Z"] = self.triggerTwoLeft
+            self.funcMap["ABS_RZ"] = self.triggerTwoRight
+            self.funcMap["BTN_TL"] = self.triggerOneLeft
+            self.funcMap["BTN_TR"] = self.triggerOneRight
+            self.funcMap["BTN_SOUTH"] = self.aButton
+            self.funcMap["BTN_WEST"] = self.xButton
+            self.funcMap["BTN_EAST"] = self.bButton
+            self.funcMap["BTN_NORTH"] = self.yButton
+            self.funcMap["BTN_START"] = self.startButton
+            self.funcMap["BTN_SELECT"] = self.selectButton
+            self.funcMap["BTN_THUMBR"] = self.rightAnalogClick
+            self.funcMap["BTN_THUMBL"] = self.leftAnalogClick
+        else:
+            self.funcMap["ABS_X"] = self.leftAnalogX
+            self.funcMap["ABS_Y"] = self.leftAnalogY
+            self.funcMap["ABS_RX"] = self.rightAnalogX
+            self.funcMap["ABS_RY"] = self.rightAnalogY
+            self.funcMap["ABS_HAT0X"] = self.dPadXMapping
+            self.funcMap["ABS_HAT0Y"] = self.dPadYMapping
+            self.funcMap["ABS_Z"] = self.triggerTwoLeftMapping
+            self.funcMap["ABS_RZ"] = self.triggerTwoRightMapping
+            self.funcMap["BTN_TL"] = self.triggerOneLeftMapping
+            self.funcMap["BTN_TR"] = self.triggerOneRightMapping
+            self.funcMap["BTN_SOUTH"] = self.aButton
+            self.funcMap["BTN_WEST"] = self.xButtonMapping
+            self.funcMap["BTN_EAST"] = self.bButton
+            self.funcMap["BTN_NORTH"] = self.yButtonMapping
+            self.funcMap["BTN_START"] = self.startButton
+            self.funcMap["BTN_SELECT"] = self.selectButton
+            self.funcMap["BTN_THUMBR"] = self.rightAnalogClickMapping
+            self.funcMap["BTN_THUMBL"] = self.leftAnalogClickMapping
 
     # JOY STICKS
     def leftAnalogY(self, e):
@@ -135,21 +165,59 @@ class IOHandler:
             self.inputState = InputState.FREE 
         if (self.inputState == InputState.FREE):
             self.xAccel = math.pow((e.state/32000.0),3) * self.noLockSens
+    def leftAnalogClick(self, e):
+        pass
+    def leftAnalogClickMapping(self, e):
+        if (e.state):
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.LACBinding])
+        else:
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.LACBinding])
+    def rightAnalogClick(self, e):
+        pass
+    def rightAnalogClickMapping(self, e):
+        if (e.state):
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.RACBinding])
+        else:
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.RACBinding])
 
     # D PAD
     def dPadY(self, e):
         self.inputState = InputState.INCREMENT
         if (self.inputState == InputState.INCREMENT):
             self.y += self.step * e.state
+    def dPadYMapping(self, e):
+        if (e.state == 0):
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.DPUBinding])
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.DPDBinding])
+        elif (e.state == -1):
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.DPUBinding])
+        else:
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.DPDBinding])
     def dPadX(self, e):
         self.inputState = InputState.INCREMENT
         if (self.inputState == InputState.INCREMENT):
             self.x += self.step * e.state
+    def dPadXMapping(self, e):
+        if (e.state == 0):
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.DPLBinding])
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.DPRBinding])
+        elif (e.state == -1):
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.DPLBinding])
+        else:
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.DPRBinding])
     
     # TRIGGERS
     def triggerOneLeft(self, e):
         if (e.state):
-            pyautogui.press("left")
+            pyautogui.keyDown("left")
+        else:
+            pyautogui.keyUp("left")
+        self.leftCloseTrigger = bool(e.state)
+    def triggerOneLeftMapping(self, e):
+        if (e.state != 1):
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.LBBinding])
+        else:
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.LBBinding])
         self.leftCloseTrigger = bool(e.state)
     def triggerTwoLeft(self, e):
         if (e.state == 255):
@@ -159,10 +227,25 @@ class IOHandler:
             self.leftClose = True
         else:
             self.leftClose = False
+    def triggerTwoLeftMapping(self, e):
+        if (e.state == 255):
+            self.leftClose = True
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.LTBinding])
+        else:
+            self.leftClose = False
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.LTBinding])
     def triggerOneRight(self, e):
         if (e.state):
-            pyautogui.press("right")
+            pyautogui.keyDown("right")
+        else:
+            pyautogui.keyUp("right")
         self.rightCloseTrigger = bool(e.state)
+    def triggerOneRightMapping(self, e):
+        if (e.state != 1):
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.RBBinding])
+        else:
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.RBBinding])
+        self.leftCloseTrigger = bool(e.state)
     def triggerTwoRight(self, e):
         if (e.state == 255):
             self.rightClose = True
@@ -171,30 +254,45 @@ class IOHandler:
             self.y = self.invTopLeftY
         else:
             self.rightClose = False
+    def triggerTwoRightMapping(self, e):
+        if (e.state == 255):
+            self.rightClose = True
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.RTBinding])
+        else:
+            self.rightClose = False
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.RTBinding])
+        
     
     # BUTTONS
     def aButton(self, e):
-        if (e.state != 1):
-            return
+        if (e.state):
+            pyautogui.mouseDown()
+        else:
+            pyautogui.mouseUp()
         if (self.shiftOn):
             pyautogui.keyUp("shiftleft")
             self.shiftOn = False
-        pyautogui.click()
     def yButton(self, e):
-        if (e.state != 1):
-            return
         if (not self.shiftOn):
             pyautogui.keyDown("shiftleft")
             self.shiftOn = True
-        pyautogui.click()
-        
+        if (e.state):
+            pyautogui.mouseDown()
+        else:
+            pyautogui.mouseUp()
+    def yButtonMapping(self, e):
+        if (e.state):
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.YBinding])
+        else:
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.YBinding])
     def bButton(self, e):
-        if (e.state != 1):
-            return
+        if (e.state):
+            pyautogui.mouseDown(button="right")
+        else:
+            pyautogui.mouseUp(button="right")
         if (self.shiftOn):
             pyautogui.keyUp("shiftleft")
             self.shiftOn = False
-        pyautogui.rightClick()
     def xButton(self, e):
         if (e.state != 1):
             return
@@ -204,20 +302,31 @@ class IOHandler:
         pyautogui.keyDown("ctrlleft")
         pyautogui.click()
         pyautogui.keyUp("ctrlleft")
+    def xButtonMapping(self, e):
+        if (e.state):
+            pyautogui.keyDown(self.bindingsDict[CONSTANTS.XBinding])
+        else:
+            pyautogui.keyUp(self.bindingsDict[CONSTANTS.XBinding])
     
     #START/SELECT
     def startButton(self, e):
         if (self.shiftOn):
             pyautogui.keyUp("shiftleft")
             self.shiftOn = False
+        if (e.state):
+            self.mapping = not self.mapping
+            self.populateInputFunctionMap()
     def selectButton(self, e):
         if (e.state):
-            pyautogui.press("escape")
+            pyautogui.keyDown("escape")
+        else:
+            pyautogui.keyUp("escape")
         if (self.shiftOn):
             pyautogui.keyUp("shiftleft")
             self.shiftOn = False
     
     def outputLoop(self):
+        lastX, lastY = 0, 0
         while 1:
             while self.outputActive:
                 if (self.inputState == InputState.FREE):
