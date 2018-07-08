@@ -206,7 +206,7 @@ class PoXe:
             return
 
     def bindNewKey(self, btn):
-        result = self.app.stringBox("Key Binding", btn + ": enter single letter or numer(0-9) \nor tab | space | shift | middle_mouse | left_mouse | right_mouse")
+        result = self.app.stringBox("Key Binding", btn + ": enter single letter or numer(0-9) \nor tab | space | shift | ctrl | middle_mouse | left_mouse | right_mouse")
         if (result == None):
             return
         try:

@@ -33,4 +33,4 @@ class CONSTANTS:
 
 
 
-    SPECIAL_BINDS = ["tab", "space", "middle_mouse", "left_mouse", "right_mouse", "shift"]
+    SPECIAL_BINDS = ["tab", "space", "shift", "ctrl", "middle_mouse", "left_mouse", "right_mouse"]
