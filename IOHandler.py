@@ -50,7 +50,7 @@ class IOHandler:
         self.swapCliff = 25000
         self.noLockSens = self.userPrefsDict[CONSTANTS.FreeCursorSpeed]/self.userPrefsDict[CONSTANTS.FrameRate]
         self.noLockAccel = self.userPrefsDict[CONSTANTS.FreeCursorAccel]
-        self.accelFloor = 1.0
+        self.accelDeadZone = 5000
 
         # the input state used when deciding how to increment the cursor
         self.inputState = InputState.LOCKED
@@ -75,6 +75,7 @@ class IOHandler:
                 except:
                     self.inputActive = False
                     self.outputActive = False
+                    self.app.setButton("START", "START")
                     self.app.warningBox("Controller Not Found", "Sorry, no controller was found")
                     break
                 
@@ -93,6 +94,7 @@ class IOHandler:
                         self.inputActive = False
                         self.outputActive = False
                         self.startClose, self.selectClose = False, False
+                        self.app.setButton("START", "START")
             
             while not self.inputActive:
                 time.sleep(.5)
@@ -174,16 +176,18 @@ class IOHandler:
         if (abs(e.state) > self.swapCliff):
             self.inputState = InputState.FREE
         if (self.inputState == InputState.FREE):
-            self.yAccel = math.pow((e.state/32000.0),self.noLockAccel)* self.noLockSens
-            if (abs(self.yAccel) < self.accelFloor):
+            if (abs(e.state) < self.accelDeadZone):
                 self.yAccel = 0
+            else:
+                self.yAccel = math.pow((e.state/32000.0),self.noLockAccel)* self.noLockSens
     def rightAnalogX(self, e):
         if (abs(e.state) > self.swapCliff):
             self.inputState = InputState.FREE 
         if (self.inputState == InputState.FREE):
-            self.xAccel = math.pow((e.state/32000.0),self.noLockAccel) * self.noLockSens
-            if (abs(self.xAccel) < self.accelFloor):
+            if (abs(e.state) < self.accelDeadZone):
                 self.xAccel = 0
+            else:
+                self.xAccel = math.pow((e.state/32000.0),self.noLockAccel) * self.noLockSens
     def leftAnalogClick(self, e):
         self.smartPress(bool(e.state), self.userPrefsDict[CONSTANTS.LACBindingHideout])
     def leftAnalogClickMapping(self, e):
@@ -315,7 +319,6 @@ class IOHandler:
         self.selectClose = bool(e.state)
 
     # OUTPUT LOOP
-    
     def outputLoop(self):
         lastX, lastY = 0, 0
         while 1:

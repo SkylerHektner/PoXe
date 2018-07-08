@@ -38,14 +38,20 @@ Dpad = Incremental Step (one inventory grid position at a time)
 
 Left Trigger = Snap cursor to currency tab center
 Right Trigger = Snap cursor to inventory grid top Left
-Left Analog Stick Click = Snap cursor to map device start button
 
 Left Button/Right Button = Arrow keys left and right for navigation of stash tabs
 
-Right Analog Stick Click = Bindable (I recommend your atlas or inventory!)
+Right Analog Stick Click = Bindable
+Left Analog Stick Click = Bindable
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 
 How do I stop this thing?
 
 If you get into an "Oh Shit" situation for any reason and app is not responding use the windows shortcut 
 control+shift+escape to bring up task manager and force quit the application. When task manager is your active 
 window PoXe cannot control your mouse.
+
+My Controller Won't Connect!
+
+Make sure your controller is on before starting the application and try again.
