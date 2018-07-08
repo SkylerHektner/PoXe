@@ -50,6 +50,7 @@ class IOHandler:
         self.swapCliff = 25000
         self.noLockSens = self.userPrefsDict[CONSTANTS.FreeCursorSpeed]/self.userPrefsDict[CONSTANTS.FrameRate]
         self.noLockAccel = self.userPrefsDict[CONSTANTS.FreeCursorAccel]
+        self.accelFloor = 1.0
 
         # the input state used when deciding how to increment the cursor
         self.inputState = InputState.LOCKED
@@ -60,7 +61,9 @@ class IOHandler:
 
         # the threads responsible for handling input/output
         self.inputThread = threading.Thread(target = self.inputLoop)
+        self.inputThread.daemon = True
         self.outputThread = threading.Thread(target = self.outputLoop)
+        self.outputThread.daemon = True
         self.inputThread.start()
         self.outputThread.start()
     
@@ -83,7 +86,7 @@ class IOHandler:
                             self.funcMap[e.code](e)
                         except:
                             print(e.code)
-                            self.app.warningBox("Sorry, your controller may not be supported")
+                            self.app.warningBox("Unsupported Key Code","Sorry, your controller may not be supported")
 
                     # EXIT CONDITION    
                     if (self.startClose and self.selectClose):
@@ -172,11 +175,15 @@ class IOHandler:
             self.inputState = InputState.FREE
         if (self.inputState == InputState.FREE):
             self.yAccel = math.pow((e.state/32000.0),self.noLockAccel)* self.noLockSens
+            if (abs(self.yAccel) < self.accelFloor):
+                self.yAccel = 0
     def rightAnalogX(self, e):
         if (abs(e.state) > self.swapCliff):
             self.inputState = InputState.FREE 
         if (self.inputState == InputState.FREE):
             self.xAccel = math.pow((e.state/32000.0),self.noLockAccel) * self.noLockSens
+            if (abs(self.xAccel) < self.accelFloor):
+                self.xAccel = 0
     def leftAnalogClick(self, e):
         self.smartPress(bool(e.state), self.userPrefsDict[CONSTANTS.LACBindingHideout])
     def leftAnalogClickMapping(self, e):

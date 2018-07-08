@@ -21,7 +21,7 @@ Step Increment = 54 (20-1000) (Combo Box)
 
 2) Add in keyups on mode switch to stop bugs (DONE)
 
-3) Add in Middle_Mouse support to custom bindings
+3) Add in Middle_Mouse support to custom bindings (DONE)
 
 4) Add in an instructions button that brings up a popup (DONE ENOUGH)
 
@@ -32,3 +32,6 @@ Step Increment = 54 (20-1000) (Combo Box)
 7) Add in saving default preferences (DONE)
 
 8) Change cursor unlock to select + start (DONE)
+
+bugs
+1) When in FREE mode need to set bottom cliff for modiying self.x/self.y
