@@ -18,6 +18,8 @@ class PoXe:
         self.app.go()
 
     def configureUserSettingsDict(self):
+        self.userSettingsDict[CONSTANTS.ABinding] = "mouse_left"
+        self.userSettingsDict[CONSTANTS.BBinding] = "mouse_right"
         self.userSettingsDict[CONSTANTS.XBinding] = "r"
         self.userSettingsDict[CONSTANTS.YBinding] = "f"
         self.userSettingsDict[CONSTANTS.LBBinding] = "2"
@@ -31,6 +33,9 @@ class PoXe:
         self.userSettingsDict[CONSTANTS.LACBinding] = "tab"
         self.userSettingsDict[CONSTANTS.RACBinding] = "g"
 
+        self.userSettingsDict[CONSTANTS.LACBindingHideout] = "g"
+        self.userSettingsDict[CONSTANTS.RACBindingHideout] = "c"
+
         self.userSettingsDict[CONSTANTS.LockedCursorRadius] = .23
         self.userSettingsDict[CONSTANTS.FreeCursorSpeed] = 1000.0
         self.userSettingsDict[CONSTANTS.FreeCursorAccel] = 3
@@ -40,6 +45,7 @@ class PoXe:
         self.userSettingsDict[CONSTANTS.StashSnapX] = 335
         self.userSettingsDict[CONSTANTS.StashSnapY] = 540
         self.userSettingsDict[CONSTANTS.IncrementStep] = 54
+
         try:
             self.loadDefaults()
         except:
@@ -55,14 +61,17 @@ class PoXe:
 
     def loadDefaults(self):
         text = open("userPrefs.json").read()
-        self.userSettingsDict = json.loads(text)
+        tempDict = json.loads(text)
+        for key in tempDict.keys():
+            self.userSettingsDict[key] = tempDict[key]
+        self.saveDefaults(None)
 
     def configureUI(self):
         # NAME
         self.app.title = "PoXe"
         self.app.setIcon("Poxe.ico")
 
-        # CONFIG
+        # LOOK & FEEL
         self.app.setResizable(canResize=False)
 
         # START BUTTON
@@ -71,10 +80,6 @@ class PoXe:
 
         # UNIVERSAL SETTINGS
         self.app.startLabelFrame("Universal Settings", 2, 1)
-        self.app.addLabel("A_Label", "A Binding: Left Click", 0, 0)
-        self.app.setLabelAlign("A_Label", "left")
-        self.app.addLabel("B_Label", "B Binding: Right Click", 1, 0)
-        self.app.setLabelAlign("B_Label", "left")
         self.app.addLabel(CONSTANTS.LockedCursorRadius + "L", "Cursor Lock Mode Radius", 2, 0)
         self.app.addScale(CONSTANTS.LockedCursorRadius, 2, 1)
         self.app.setScaleRange(CONSTANTS.LockedCursorRadius, .1, .4)
@@ -108,13 +113,16 @@ class PoXe:
         self.createSnapSet(CONSTANTS.StashSnapX, CONSTANTS.StashSnapX, 2, 0)
         self.createSnapSet(CONSTANTS.StashSnapY, CONSTANTS.StashSnapY, 3, 0)
         self.createSnapSet(CONSTANTS.IncrementStep, "DPad Increment: ", 4, 0)
-        self.app.addButton("Reset To Default", self.resetSnappingVals, 5, 0, 0)
-        self.app.addLabel("SnapWarningsL", "It is recommended you don't change these values", 5, 1)
+        self.app.addButton("Hard Reset Snap Settings", self.resetSnappingVals, 5, 0, 0)
+        self.createBindingSet(CONSTANTS.LACBindingHideout, "Left Analog Click Binding: " + self.userSettingsDict[CONSTANTS.LACBindingHideout], 6, 0)
+        self.createBindingSet(CONSTANTS.RACBindingHideout, "Right Analog Click Binding: " + self.userSettingsDict[CONSTANTS.RACBindingHideout], 7, 0)
         self.app.stopLabelFrame()
 
         # MAPPING MODE SETTINGS
         self.app.startLabelFrame("Mapping Mode Settings", 2, 0, rowspan = 2)
-        self.createBindingSet(CONSTANTS.XBinding, "X Binding: "+ self.userSettingsDict[CONSTANTS.XBinding], 4, 0)
+        self.createBindingSet(CONSTANTS.ABinding, "A Binding: " + self.userSettingsDict[CONSTANTS.ABinding], 2, 0)
+        self.createBindingSet(CONSTANTS.BBinding, "B Binding: " + self.userSettingsDict[CONSTANTS.BBinding], 3, 0)
+        self.createBindingSet(CONSTANTS.XBinding, "X Binding: " + self.userSettingsDict[CONSTANTS.XBinding], 4, 0)
         self.createBindingSet(CONSTANTS.YBinding, "Y Binding: " + self.userSettingsDict[CONSTANTS.YBinding], 5, 0)
         self.createBindingSet(CONSTANTS.LBBinding, "LB Binding: " + self.userSettingsDict[CONSTANTS.LBBinding], 6, 0)
         self.createBindingSet(CONSTANTS.RBBinding, "RB Binding: " + self.userSettingsDict[CONSTANTS.RBBinding], 7, 0)
@@ -130,13 +138,14 @@ class PoXe:
 
         # Extras
         self.app.addButton("Instructions", self.showInstructions, 4, 0)
-        self.app.addButton("Set As Default", self.saveDefaults, 4, 1)
+        self.app.addButton("Make Settings New Default", self.saveDefaults, 4, 1)
 
     def createBindingSet(self, title, labelText, row, column):
         self.app.addLabel(title + "L", labelText, row, column)
         self.app.setLabelAlign(title + "L", "left")
         self.app.addButton(title, self.bindNewKey, row, column + 1)
-        self.app.setButtonWidth(title, 20)
+        self.app.setButtonWidth(title, 7)
+        self.app.setButton(title, "Bind")
 
     def createSnapSet(self, title, labelText, row, column):
         self.app.addLabel(title + "L", title + ": ", row, column)
@@ -196,7 +205,7 @@ class PoXe:
             return
 
     def bindNewKey(self, btn):
-        result = self.app.stringBox("Key Binding", btn + ": enter single letter or numer(0-9) \nor tab | space | shift | middle_mouse")
+        result = self.app.stringBox("Key Binding", btn + ": enter single letter or numer(0-9) \nor tab | space | shift | middle_mouse | left_mouse | right_mouse")
         if (result == None):
             return
         try:

@@ -7,8 +7,6 @@ Most buttons rebind to different controls between these two settings except Sele
 Select will always be used to switch between Mapping and Hideout modes.
 Start will always be bound to "Escape" on your keyboard
 Pressing Select and Start together will always unlock your cursor
-A will always be bound to left click
-B will always be bound to right click
 
 Analog Sticks 
 In PoXe your analog sticks control your mouse. There are two mouse control types in PoXe, Free and Locked.
@@ -21,13 +19,13 @@ Both of these input types can be tweaked to your preference in the main applicat
 Mapping Mode 
 In Mapping mode controller inputs map to your skills. You can configure these bindings in the main application
 under "Mapping Mode Settings". In this mode you can bind the DPAD, Triggers, Left and Right Buttons, Analog 
-stick clicks, and the x and y buttons to nearly any key you want. (a = click and b = right click by default).
+stick clicks, and the a, b, x, and y buttons to nearly any key you want.
 
 In Mapping mode the left analog stick will be in Locked mode and the right analog stick will be in Free mode
 
 Hideout Mode 
 In Hideout mode the controller inputs have been designed for managing your inventory and stash. These controls cannot be rebound,
-but some can be adjusted in the main application under "Hideout Mode Settings". 
+(with the excepction of Left Analog and Right Analog Click) but some can be adjusted in the main application under "Hideout Mode Settings". 
 
 In Hideout mode the left analog stick will be in Free mode and the right analog stick will be in Locked mode
 

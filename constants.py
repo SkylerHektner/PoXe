@@ -1,6 +1,8 @@
 
 class CONSTANTS:
     # BINDING CODES
+    ABinding = "Bind A Button"
+    BBinding = "Bind B Button"
     XBinding = "Bind X Button"
     YBinding = "Bind Y Button"
     LBBinding = "Bind Left Button"
@@ -13,6 +15,8 @@ class CONSTANTS:
     DPRBinding = "Bind Dpad Right"
     LACBinding = "Bind Left Analog Click"
     RACBinding = "Bind Right Analog Click"
+    LACBindingHideout = "Bind Left Analog Click For Hideout"
+    RACBindingHideout = "Bind Right Analog Click For Hideout"
 
     # Global Settings
     LockedCursorRadius = "Locked Cursor Radius"
@@ -29,4 +33,4 @@ class CONSTANTS:
 
 
 
-    SPECIAL_BINDS = ["tab", "space", "middle_mouse", "shift"]
+    SPECIAL_BINDS = ["tab", "space", "middle_mouse", "left_mouse", "right_mouse", "shift"]
