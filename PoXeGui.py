@@ -53,7 +53,7 @@ class PoXe:
             self.saveDefaults(None)
 
     def saveDefaults(self, btn):
-        file = open("userPrefs.json", "w")
+        file = open("Resources/userPrefs.json", "w")
         file.flush()
         file.write(json.dumps(self.userSettingsDict))
         file.close()
@@ -61,7 +61,7 @@ class PoXe:
             self.app.infoBox("Success", "New Defaults Succesfully Saved")
 
     def loadDefaults(self):
-        text = open("userPrefs.json").read()
+        text = open("Resources/userPrefs.json").read()
         tempDict = json.loads(text)
         for key in tempDict.keys():
             self.userSettingsDict[key] = tempDict[key]
@@ -70,7 +70,7 @@ class PoXe:
     def configureUI(self):
         # NAME
         self.app.title = "PoXe"
-        self.app.setIcon("Poxe.ico")
+        self.app.setIcon("Resources/Poxe.ico")
 
         # LOOK & FEEL
         self.app.setResizable(canResize=False)
@@ -169,7 +169,7 @@ class PoXe:
         return True
 
     def showInstructions(self):
-        text = open("INSTRUCTIONS.txt").read()
+        text = open("Resources/INSTRUCTIONS.txt").read()
         self.app.infoBox("Instructions", text)
 
     def resetSnappingVals(self):
