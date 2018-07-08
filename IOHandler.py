@@ -19,6 +19,8 @@ class IOHandler:
         self.app = app
         # reference to the userPrefsDict for triggering actions
         self.userPrefsDict = userPrefsDict
+        # stop pyautogui from horribly pausing
+        pyautogui.PAUSE = 0.0
 
         # bools for managing thread states
         self.inputActive = False
@@ -227,7 +229,7 @@ class IOHandler:
     def triggerOneLeft(self, e):
         self.smartPress(bool(e.state), "left")
     def triggerOneLeftMapping(self, e):
-        self.smartPress(bool(e), self.userPrefsDict[CONSTANTS.LBBinding])
+        self.smartPress(bool(e.state), self.userPrefsDict[CONSTANTS.LBBinding])
     def triggerTwoLeft(self, e):
         if (e.state == 255):
             self.inputState = InputState.FREE
