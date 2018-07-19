@@ -33,5 +33,9 @@ Step Increment = 54 (20-1000) (Combo Box)
 
 8) Change cursor unlock to select + start (DONE)
 
+9) Add in "Please restart app before trying again" to the no controller found popup
+10) Add in deadzone to the locked mode logic
+11) 
+
 bugs
 1) When in FREE mode need to set bottom cliff for modiying self.x/self.y
